@@ -94,20 +94,19 @@ void    tx_application_define(void* first_unused_memory)
 
 /************************************************************/
 
-/* Urgent thread entry function */
+/* Função de entrada para a thread Urgent. */
 
 void    Urgent_entry(ULONG thread_input)
 {
     ULONG   start_time, cycle_time, current_time, sleep_time, status;
 
-    /* This is the Urgent thread--it has a higher priority than the Routine thread */
+    /* Esta é a thread Urgent - ela tem uma prioridade maior que a thread Routine. */
     while (1)
     {
-        /* Get the starting time for this cycle */
+        /* Obter o tempo de início para este ciclo. */
         start_time = tx_time_get();
 
-        /* Get the semaphore and sleep--90% of the time sleep_time==5,
-                                        10% of the time sleep_time==75. */
+        /* Obter o semáforo e dormir - 90% do tempo sleep_time==5, 10% do tempo sleep_time==75. */
         tx_semaphore_get(&my_semaphore, TX_WAIT_FOREVER);
         if (rand() % 100 < 90) sleep_time = 5;
         else sleep_time = 75;
@@ -115,14 +114,15 @@ void    Urgent_entry(ULONG thread_input)
         status = tx_thread_sleep(sleep_time);
         if (status == TX_WAIT_ABORTED)
         {
-            /* Sleep suspension is terminated
-               Code to handle this situation would be here */;
+            /* Suspensão de sono terminada. */
+
+            /* O código para lidar com esta situação seria colocado aqui. */
         }
 
-        /* Release the semaphore.  */
+        /* Liberar o semáforo. */
         tx_semaphore_put(&my_semaphore);
 
-        /* Increment the thread counter and get timing info  */
+        /* Incrementar o contador de threads e obter as informações de tempo. */
         Urgent_counter++;
         current_time = tx_time_get();
         cycle_time = current_time - start_time;
