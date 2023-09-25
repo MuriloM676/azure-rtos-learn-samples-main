@@ -167,30 +167,38 @@ void    Routine_entry(ULONG thread_input)
 
 /************************************************************/
 
+/************************************************************/
+/* implementando a parte que detecta a ociosidade da thread Routine e interrompe sua suspensão,
+  semelhante ao que é feito com a thread Urgent na função Monitor_entry */
 void    Monitor_entry(ULONG thread_input)
 {
-
-    /* Parameter for the thread info get service */
+    /* Parâmetro para o serviço de obtenção de informações da thread */
     ULONG run_count;
 
-    /* This is the Monitor thread - it has the highest priority */
+    /* Esta é a thread Monitor - ela tem a mais alta prioridade. */
     while (1)
     {
-        /* The Monitor thread wakes up every 50 timer ticks and checks on the other threads */
+        /* A thread Monitor acorda a cada 50 marcas de tempo do temporizador e verifica as outras threads */
         tx_thread_sleep(50);
 
-        /* Determine whether the Urgent thread has stalled--if so, break its suspension */
+        /* Determinar se a thread Urgent está travada - se estiver, interrompa sua suspensão */
         tx_thread_info_get(&Urgent, TX_NULL, TX_NULL,
-            &run_count, TX_NULL, TX_NULL, TX_NULL, TX_NULL, TX_NULL);
+                           &run_count, TX_NULL, TX_NULL, TX_NULL, TX_NULL, TX_NULL);
 
-        /* If the previous Urgent thread run count is the same as the current run count, abort suspension */
+        /* Se a contagem de execução anterior da thread Urgent for igual à contagem de execução atual, cancele a suspensão */
         if (Urgent_previous_run_count == run_count)  tx_thread_wait_abort(&Urgent);
         Urgent_previous_run_count = run_count;
 
-        /**** Insert code here for the Routine thread ****/
+        /* Determinar se a thread Routine está travada - se estiver, interrompa sua suspensão */
+        tx_thread_info_get(&Routine, TX_NULL, TX_NULL,
+                           &run_count, TX_NULL, TX_NULL, TX_NULL, TX_NULL, TX_NULL);
 
+        /* Se a contagem de execução anterior da thread Routine for igual à contagem de execução atual, cancele a suspensão */
+        if (Routine_previous_run_count == run_count)  tx_thread_wait_abort(&Routine);
+        Routine_previous_run_count = run_count;
     }
 }
+/*Agora, a função Monitor_entry verificará a ociosidade da thread Routine e interromperá sua suspensão da mesma forma que faz com a thread Urgent.*/
 
 /***************************************************/
 /* print statistics at specified times */
