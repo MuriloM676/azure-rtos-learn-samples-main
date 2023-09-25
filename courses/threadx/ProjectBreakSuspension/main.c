@@ -227,7 +227,7 @@ void print_stats(ULONG invalue)
         printf("           Routine counter:       %lu\n", Routine_counter); // Imprime informações sobre a thread Routine
         printf("          Routine avg time:       %lu\n\n", avg_Routine_time); // Imprime informações sobre a thread Routine
 
-        // // imprime informações sobre as operações de retomada e suspensão da thread Urgente
+        // Imprime informações sobre as operações de retomada e suspensão da thread Urgente
         printf(" Urgent Thread resumptions:       %lu\n", resumptions_Urgent);
         printf("               suspensions:       %lu\n", suspensions_Urgent);
         printf("               wait aborts:       %lu\n\n", wait_aborts_Urgent);
