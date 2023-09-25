@@ -12,85 +12,84 @@
 #define     STACK_SIZE         1024
 #define     BYTE_POOL_SIZE     9120
 
-   /* Define the ThreadX object control blocks...  */
+/* Defina os blocos de controle de objeto do ThreadX...  */
 TX_THREAD      Urgent, Routine, Monitor;
 TX_SEMAPHORE   my_semaphore;
 TX_BYTE_POOL   my_byte_pool;
 TX_TIMER       stats_timer;
 
-/* Define the counters used in the PROJECT application...  */
+/* Defina os contadores usados na aplicação PROJETO...  */
 ULONG    Urgent_counter = 0, total_Urgent_time = 0;
 ULONG    Routine_counter = 0, total_Routine_time = 0;
 
-/* Define the current run count for Urgent and Routine threads */
+/* Defina a contagem de execuções atual para as threads Urgente e Routine. */
 ULONG	 Urgent_previous_run_count = 0;
 ULONG	 Routine_previous_run_count = 0;
 
-/* Define variables for Routine thread performance info */
+/*Defina variáveis para informações de desempenho da thread Routine. */
 ULONG resumptions_Routine;
 ULONG suspensions_Routine;
 ULONG wait_aborts_Routine;
 
-/* Define variables for Urgent thread performance info */
+/* Defina variáveis para informações de desempenho da thread Urgente*/
 ULONG resumptions_Urgent;
 ULONG suspensions_Urgent;
 ULONG wait_aborts_Urgent;
 
-/* Define function prototypes.  */
+/* Defina os protótipos de função.  */
 void    Urgent_entry(ULONG thread_input);
 void    Routine_entry(ULONG thread_input);
 void    Monitor_entry(ULONG thread_input);
 void    print_stats(ULONG);
 
-/* Define main entry point.  */
+/* Defina o ponto de entrada principa.  */
 
 int main()
 {
-    /* Enter the ThreadX kernel.  */
+    /* Inicie o kernel do ThreadX.  */
     tx_kernel_enter();
 }
 
-/* Define what the initial system looks like.  */
-/* Put system definition stuff in here, e.g., thread creates and other
-   assorted create information.  */
+/* Defina como o sistema inicial se parece.  */
+/* Coloque informações de definição do sistema aqui */
 
 void    tx_application_define(void* first_unused_memory)
 {
     CHAR* Urgent_stack_ptr, * Routine_stack_ptr, * Monitor_stack_ptr;
 
-    /* Create a byte memory pool from which to allocate the thread stacks.  */
+    /* Crie um pool de memória de bytes a partir do qual alocar as pilhas das threads.  */
     tx_byte_pool_create(&my_byte_pool, "my_byte_pool",
-        first_unused_memory, BYTE_POOL_SIZE);
+                        first_unused_memory, BYTE_POOL_SIZE);
 
-    /* Allocate the stack for the Urgent thread.  */
+    /* Aloque a pilha para a thread Urgente.  */
     tx_byte_allocate(&my_byte_pool, (VOID**)&Urgent_stack_ptr, STACK_SIZE, TX_NO_WAIT);
 
-    /* Create the Urgent.  */
+    /* Crie a thread urgente  */
     tx_thread_create(&Urgent, "Urgent", Urgent_entry, 0x1234,
-        Urgent_stack_ptr, STACK_SIZE, 5, 5, TX_NO_TIME_SLICE, TX_AUTO_START);
+                     Urgent_stack_ptr, STACK_SIZE, 5, 5, TX_NO_TIME_SLICE, TX_AUTO_START);
 
-    /* Allocate the stack for the Routine thread.  */
+    /* Aloque a pilha para a thread Routine.  */
     tx_byte_allocate(&my_byte_pool, (VOID**)&Routine_stack_ptr, STACK_SIZE, TX_NO_WAIT);
 
-    /* Create the Routine thread */
+    /* Crie a rotina de thread */
     tx_thread_create(&Routine, "Routine", Routine_entry, 0x1234,
-        Routine_stack_ptr, STACK_SIZE, 15, 15,
-        TX_NO_TIME_SLICE, TX_AUTO_START);
+                     Routine_stack_ptr, STACK_SIZE, 15, 15,
+                     TX_NO_TIME_SLICE, TX_AUTO_START);
 
-    /* Allocate the stack for the Monitor thread.  */
+    /* Aloque a pilha para a thread de Monitoramento.  */
     tx_byte_allocate(&my_byte_pool, (VOID**)&Monitor_stack_ptr, STACK_SIZE, TX_NO_WAIT);
 
-    /* Create the Monitor thread */
+    /*Crie a thread de Monitoramento*/
     tx_thread_create(&Monitor, "Monitor", Monitor_entry, 0x1234,
-        Monitor_stack_ptr, STACK_SIZE, 3, 3,
-        TX_NO_TIME_SLICE, TX_AUTO_START);
+                     Monitor_stack_ptr, STACK_SIZE, 3, 3,
+                     TX_NO_TIME_SLICE, TX_AUTO_START);
 
-    /* Create the semaphore used by both threads.  */
+    /* Crie o semáforo usado por ambas as threads.  */
     tx_semaphore_create(&my_semaphore, "my_semaphore", 2);
 
-    /* Create and activate the timer */
+    /* Crie e ative o timer */
     tx_timer_create(&stats_timer, "stats_timer", print_stats,
-        0x1234, 1000, 1000, TX_AUTO_ACTIVATE);
+                    0x1234, 1000, 1000, TX_AUTO_ACTIVATE);
 }
 
 /************************************************************/
