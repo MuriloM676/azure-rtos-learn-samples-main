@@ -131,40 +131,44 @@ void    Urgent_entry(ULONG thread_input)
 
 /************************************************************/
 
-/* Routine thread entry function */
+/************************************************************/
+
+/* Função de entrada de thread de rotina */
 
 void    Routine_entry(ULONG thread_input)
 {
-    ULONG	start_time, current_time, cycle_time, sleep_time;
+    ULONG    start_time, current_time, cycle_time, sleep_time;
 
-    /* This is the Routine thread--it has a lower priority than the Urgent thread */
+    /* Essa é a função da thread de rotina, ela tem uma prioridade menor do que a thread urgente*/
     while (1)
     {
-        /* Get the starting time for this cycle */
+        /* Adicionando para uma variável o horário quando o ciclo se iniciou */
         start_time = tx_time_get();
 
-        /* Get the semaphore and sleep--90% of the time sleep_time==25,
-                                        10% of the time sleep_time==400 */
+        /*
+            Obter a key ou esperar
+            Nesse bloco é feito uma requisição para uma chave (semáforo), caso a mesma não retorne ele espera por um tempo definido atráves de uma lógica
+            de "moeda", caso der "cara" (menos de 90 em 100 vezes), ele espera por 25 unidades de tempo do contrário espera 400 unidades.
+        */
         tx_semaphore_get(&my_semaphore, TX_WAIT_FOREVER);
         if (rand() % 100 < 90) sleep_time = 25;
         else sleep_time = 400;
 
+        /* Aqui é executado a execução para ser feita a espera própriamente */
         tx_thread_sleep(sleep_time);
-        /* Insert if statement to determine whether sleep was wait aborted */
 
-        /* Release the semaphore.  */
+        /* Libera o semáforo  */
         tx_semaphore_put(&my_semaphore);
 
-        /* Increment the thread counter and get timing info  */
+        /* Incrementar o contador de thread */
         Routine_counter++;
 
+        /* Coleta as informações de tempo */
         current_time = tx_time_get();
         cycle_time = current_time - start_time;
         total_Routine_time += cycle_time;
     }
 }
-
-/************************************************************/
 
 /************************************************************/
 /* implementando a parte que detecta a ociosidade da thread Routine e interrompe sua suspensão,
