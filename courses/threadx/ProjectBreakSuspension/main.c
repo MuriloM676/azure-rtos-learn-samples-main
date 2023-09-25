@@ -1,10 +1,9 @@
-/* ProjectBreakSuspension - create three threads, one byte pool, one semaphore, and one timer.
-   The Monitor thread uses wait abort to break Urgent or Routine thread's suspension after
-   a long period of idleness. The Urgent and Routine threads each use the semaphore to proceed,
-   but occasionally each thread sleeps for an extremely long time. The Monitor thread
-   detects this idleness and breaks that thread's suspension.
+/* ProjectBreakSuspension - crie três threads, um pool de bytes, um semáforo e um timer.
+  O thread Monitor usa wait abort para interromper a suspensão do thread Urgente ou Rotine após um longo período de inatividade.
+  Os threads Urgente e Rotine usam o semáforo para prosseguir, mas ocasionalmente cada thread dorme por um tempo extremamente longo.
+  O thread Monitor detecta essa inatividade e interrompe a suspensão desse thread.
 
-   Your task is to detect the idleness for the Routine thread and break its suspension */
+   Sua tarefa é detectar a inatividade do thread Rotine e interromper sua suspensão. */
 
 #include   "tx_api.h"
 #include   <stdio.h>
